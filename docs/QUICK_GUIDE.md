@@ -84,9 +84,11 @@
 ```
 このセッションの前提を再確認します。逸脱があれば指摘してください。
 
-- 言語/フレームワーク: [例: Python 3.12 / FastAPI]
+- 言語: [例: Python 3.12]
 - 依存管理: [例: uv]
-- テスト: [例: pytest + fakeredis]
+- テスト: pytest + fakeredis. **全変更にテストコード必須**（テスト無しのコード変更は不完全）
+- 実行環境: Redis は Docker compose で起動
+- データ I/O: CSV（エンコーディング / 区切り / ヘッダ仕様を明示）
 - 後方互換性: [必須 / 不要]
 - 出力ルール: 推測は [ASSUMPTION] / 確認事項は [QUESTION] / 既存に反する変更は [BREAKING]
 - タグなしで推測・決定した出力は不完全とみなす
@@ -99,33 +101,31 @@
 ```
 このセッション全体で守るべき前提を確認・固定します。
 
-### 技術スタック（Python / Redis / Terraform / GCP 中心）
-- アプリ言語: Python 3.12（補助: Bash）
-- IaC: Terraform [例: 1.7.x]
-- クラウド: GCP / プロジェクト ID: [プロジェクト ID]
-- 主要 GCP サービス: [例: Cloud Run / Cloud Functions / Vertex AI / BigQuery / Cloud Storage / Pub/Sub / Secret Manager / Memorystore for Redis]
-- Redis: Memorystore for Redis または自前 / クライアント: redis-py / 用途: [例: キャッシュ / セッション / レートリミット / ジョブキューは永続化要件次第で自前運用]
-- Python フレームワーク: [例: FastAPI / Flask / Cloud Functions Framework]
-- テスト: pytest / fakeredis または testcontainers-redis / terraform validate・tflint・terraform plan
-- リンター: ruff / terraform fmt
-- 型チェック: mypy strict
-- 依存管理: [例: uv / poetry]
-- 認証: [例: ADC / Workload Identity Federation]
+### 技術スタック（Python / Docker / CSV / Redis）
+- アプリ言語: Python [例: 3.12]（補助: Bash）
+- 依存管理: [例: uv / poetry / pip-tools]
+- テスト: pytest + fakeredis（Redis を使うコードの単体テスト）
+- リンター/フォーマッター: [例: ruff]
+- 型チェック: [例: mypy strict / pyright]
+- Redis: クライアント [例: redis-py] / 用途 [例: キャッシュ / ジョブキュー / 重複排除] / 起動は Docker compose
+- Docker: ローカル開発で Redis を起動するため必須。`docker compose up` で立ち上がる構成
+- CSV: 入出力のデータ形式 / エンコーディング [例: UTF-8 / Shift_JIS] / 区切り [例: , / \\t] / ヘッダ有無
 
 ### コーディング規約
 - Python: PEP 8（snake_case / PascalCase / UPPER_SNAKE_CASE）
-- Terraform: リソース型 snake_case、name 属性 kebab-case
-- Redis キー: コロン区切り名前空間（`app:<feature>:<id>`）、用途と TTL をコメントで明示
-- ディレクトリ: Python = src/<package>/、tests/ ／ Terraform = terraform/envs/<env>/、terraform/modules/
+- Redis キー: 名前空間（例: `app:<feature>:<id>`）、用途と TTL をコメントで明示
+- CSV: ヘッダ行・型・必須項目を schema として明示（[例: `pydantic` モデル / `dataclass` で受ける]）
+- ディレクトリ: [例: src/<package>/、tests/、data/input/、data/output/]
 - 既存規約ドキュメント: [パス]
 
 ### 制約
 - 後方互換性: [必須 / 不要]
-- 性能要件: [例: API p95 < 200ms / Cloud Run コールドスタート許容]
+- 性能要件: [例: バッチ全体の所要時間 / 1 行あたり処理時間 / メモリ上限]
 - 依存追加: [自由 / 要承認 / 禁止]
-- セキュリティ: 機密は Secret Manager、ハードコード禁止
-- IaC: 手動変更禁止、remote backend 必須
-- Redis: TTL 必須、永続化方針 [RDB/AOF/なし]、最大メモリポリシー [例: allkeys-lru]
+- セキュリティ: 機密は環境変数経由、ハードコード禁止
+- Redis: TTL 必須（メモリ枯渇防止）、用途別に名前空間分離
+- Docker: `compose.yaml` を変更する場合は影響を [BREAKING] 報告
+- CSV: 文字コード / 区切り / 改行コードの取り違えは [BREAKING] 候補
 
 ### 出力ルール（全Stepで遵守）
 - 推測は [ASSUMPTION]、確認事項は [QUESTION]、既存に反する変更は [BREAKING]
@@ -134,7 +134,7 @@
 確認後、「前提固定完了」と出力してください。
 ```
 
-**運用**: 0-C-full の埋め込み済み版を `docs/CONTEXT.md` 等にプロジェクト固有値で保存し、Phase 毎は 0-C-min だけを貼ると効率的。
+**運用**: 0-C-full の埋め込み済み版を `docs/CONTEXT.md` 等にプロジェクト固有値で保存し、Phase 毎は 0-C-min だけを貼ると効率的。クラウドや IaC を使う案件では、案件固有の制約として末尾に追記する。
 
 ## Step 1 | 実現可能性の調査
 
@@ -191,7 +191,6 @@ Step 1 の調査結果をもとに作業計画書を作成してください。
 
 ### 補足
 - 検証コマンドが書けない領域は「目視確認手順」で代替
-- インフラ系は `terraform plan` 差分を検証コマンドにする
 ```
 
 ## Step 3 | Phase {N} の実装
@@ -291,10 +290,10 @@ Phase 1〜{N} 全体の整合性を検証してください。
 対象: Step 5-A を通過した変更一式
 
 ### チェック項目
-1. IaC / マイグレーション
-    - `terraform plan` 差分が想定通りか（不可逆変更の有無）
-    - DB マイグレーションのロールフォワード / ロールバック
-    - DROP / データ削除の承認状況
+1. インフラ / マイグレーション
+    - インフラ変更がある場合、事前差分が想定通りか（不可逆変更の有無）
+    - データマイグレーションのロールフォワード / ロールバック
+    - 破壊的操作（DROP / データ削除）の承認状況
 2. デプロイ手順
     - リリースコマンド / パイプライン
     - 段階リリース戦略

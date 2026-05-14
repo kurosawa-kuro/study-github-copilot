@@ -16,9 +16,10 @@ Step 4 への **戻り先判定ループ** を加えた v3 体系を提供する
 主な提供物:
 
 1. **プロンプトテンプレ本体**（`docs/QUICK_GUIDE.md` / `docs/PROMPT_TEMPLATE.md`） — Step 0-A〜5-C のコピペ可能なテンプレ
-2. **完成済みハンズオン**（`tutorial/ratelimit/`） — 中規模チュートリアル一式
+2. **ハンズオン教材**（`tutorial/`） — 新題材を準備中。過去版は `tutorial/_archive/` に退避
 
-対象スタック: Python / Redis / Terraform / GCP
+学習スコープ: **Python / Docker / CSV / Redis**（API / Web / クラウド固有サービスは対象外）。
+このリポジトリの目的は **Copilot の使い方を学ぶこと** であって、クラウド技術を学ぶことではない。
 
 ---
 
@@ -35,9 +36,7 @@ Step 4 への **戻り先判定ループ** を加えた v3 体系を提供する
 
 ### B. チュートリアルで練習する
 
-1. `tutorial/` 配下の完成済み教材を使う（現状 `tutorial/ratelimit/` = 中規模・標準フロー一周）
-2. 教材 README に従い `starter/` を修正していく
-3. 行き詰まったら `facilitator-guide/` を見る（ファシリ用なので最後の手段）
+新題材を準備中。過去版（`tutorial/_archive/ratelimit/`）は題材ミスマッチ（FastAPI / GCP 前提）のため退避済み。詳細は [tutorial/README.md](tutorial/README.md)。
 
 ### C. QUICK_GUIDE.md の活用ポイント
 
@@ -45,7 +44,7 @@ Step 4 への **戻り先判定ループ** を加えた v3 体系を提供する
 |---|---|
 | 案件が来た瞬間 | 「規模別フロー」で規模判定 → 該当 Step だけ抜き出す |
 | 依頼が曖昧 | Step 0-A をまず貼る → `[QUESTION]` が全部消えてから次へ |
-| 既存コードに触る | Step 0-C で前提固定（特に Redis キー規約・後方互換性） |
+| 既存コードに触る | Step 0-C で前提固定（Redis キー規約・CSV スキーマ・後方互換性） |
 | Phase 実装中 | Step 0-C を **Phase 毎に再貼り付け**（コンテキスト落ち対策） |
 | Step 4 で × が出た | 「戻り先」表を見て Step 0-A〜3 のどこに戻すか判定 |
 | 本番投入直前 | Step 5-B のチェックリストを 1 項目ずつ潰す |
@@ -77,14 +76,10 @@ study-github-copilot/
 ├── README.md                       本書 — プロジェクト全体ナビ
 ├── docs/
 │   ├── QUICK_GUIDE.md              ★メイン: 圧縮版テンプレ + 規模別フロー + タグ + 戻り先判定
-│   └── PROMPT_TEMPLATE.md          v3 設計仕様 + Step 0-A〜5-C プロンプト本文
+│   └── PROMPT_TEMPLATE.md          v3 設計仕様（Step 本文は QUICK_GUIDE を参照）
 └── tutorial/
-    └── ratelimit/                  完成済み中規模チュートリアル（標準フロー一周）
-        ├── README.md               チュートリアル概要・進め方
-        ├── client-brief/           クライアントから届いた依頼書（意図的に薄い）
-        ├── starter/                受講者が修正していくベースコード（FastAPI + Redis）
-        ├── solution/               模範解答（Phase ごと + 引き継ぎ JSON 見本）
-        └── facilitator-guide/      ファシリ用ガイド + ルーブリック
+    ├── README.md                   教材一覧（新題材 準備中）
+    └── _archive/                   過去教材（FastAPI 前提のため退避）
 ```
 
 ---
@@ -94,10 +89,9 @@ study-github-copilot/
 | パス | 役割 | いつ読む |
 |---|---|---|
 | [README.md](README.md) | プロジェクト全体ナビ・目的・使い方 | 最初 |
-| [docs/QUICK_GUIDE.md](docs/QUICK_GUIDE.md) | 圧縮版プロンプトテンプレ・規模別フロー・タグ一覧・戻り先判定表 | 実案件で Copilot に貼る都度 |
-| [docs/PROMPT_TEMPLATE.md](docs/PROMPT_TEMPLATE.md) | v3 設計仕様（背景・工程全体マップ・運用上の留意点）+ Step 0-A〜5-C プロンプト本文 | 体系を理解するとき・新メンバー導入時 |
-| [tutorial/ratelimit/README.md](tutorial/ratelimit/README.md) | 中規模ハンズオン: API レートリミット導入 | 標準フローを一周したいとき |
-| [tutorial/ratelimit/facilitator-guide/99-rubric.md](tutorial/ratelimit/facilitator-guide/99-rubric.md) | チュートリアル評価ルーブリック | ファシリ・自己評価時 |
+| [docs/QUICK_GUIDE.md](docs/QUICK_GUIDE.md) | プロンプトテンプレ本体・規模別フロー・タグ一覧・戻り先判定表 | 実案件で Copilot に貼る都度 |
+| [docs/PROMPT_TEMPLATE.md](docs/PROMPT_TEMPLATE.md) | v3 設計仕様（背景・工程全体マップ・運用上の留意点・改訂履歴） | 体系を理解するとき・新メンバー導入時 |
+| [tutorial/README.md](tutorial/README.md) | 教材一覧 | チュートリアルを探すとき |
 
 ---
 

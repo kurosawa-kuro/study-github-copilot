@@ -1,0 +1,22 @@
+{
+  "completed_phase": 2,
+  "key_decisions": [
+    "累積は app:report:product:<id> の HASH (total_quantity / total_amount) で保持",
+    "CumulativeStore.merge は単純加算 (HINCRBY). 既存値の取得→計算→書き戻しは race を生むため避ける",
+    "--reset は累積のみクリア。冪等マーカーは Phase 3 で導入する設計"
+  ],
+  "deferred_items": [
+    "二重投入防止 (idempotency key) → Phase 3",
+    "金額の小数桁・通貨単位の扱い（[QUESTION] が出ていれば確認、現状は整数前提）"
+  ],
+  "assumptions_made": [
+    "[ASSUMPTION] quantity / amount は int (円・整数前提). 小数化要求が出たら HINCRBYFLOAT への切替検討",
+    "[ASSUMPTION] 同じ CSV が来ることは想定済みで、Phase 3 で対処する"
+  ],
+  "breaking_changes": [
+    "[BREAKING] 現状は同じ CSV を 2 回流すと二重計上される。Phase 3 で解消する前提"
+  ],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] 月次・週次など期間別累積 (依頼書には累積期間の指定なし、Step 0-A で確認)"
+  ]
+}

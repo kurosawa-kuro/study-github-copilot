@@ -1,0 +1,20 @@
+{
+  "completed_phase": 3,
+  "key_decisions": [
+    "冪等性は SADD の戻り値 (0 or 1) で判定。先回りで is_processed を見ないことで race を避ける",
+    "idempotency key の既定は入力ファイル名。--idempotency-key で明示上書き可能",
+    "--reset は累積と冪等マーカーの両方をクリアする"
+  ],
+  "deferred_items": [
+    "冪等マーカーの TTL 設計 (`[QUESTION]` のまま積み残し)",
+    "ファイル内容ハッシュでの重複検知 (`[OUT-OF-SCOPE]`)"
+  ],
+  "assumptions_made": [
+    "[ASSUMPTION] ファイル名が同じ＝同じ内容、というのは依頼者の運用前提に依存。E2E で確認する"
+  ],
+  "breaking_changes": [],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] 冪等マーカーの容量上限/TTL 戦略 (Phase 4 候補)",
+    "[OUT-OF-SCOPE] ファイル内容ハッシュ重複検知"
+  ]
+}

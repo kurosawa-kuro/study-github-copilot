@@ -36,7 +36,7 @@ Step 4 への **戻り先判定ループ** を加えた v3 体系を提供する
 
 ### B. チュートリアルで練習する
 
-新題材を準備中。過去版（`tutorial/_archive/ratelimit/`）は題材ミスマッチ（FastAPI / GCP 前提）のため退避済み。詳細は [tutorial/README.md](tutorial/README.md)。
+[tutorial/sales-aggregator/](tutorial/sales-aggregator/README.md) を一周する（4〜8 時間 / 3 Phase 構成）。日次売上 CSV を取り込んで商品ごとの累積レポートを出すバッチ題材。スタックは Python / Docker / CSV / Redis のみ。
 
 ### C. QUICK_GUIDE.md の活用ポイント
 

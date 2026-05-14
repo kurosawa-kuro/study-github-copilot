@@ -9,10 +9,10 @@ QUICK_GUIDE.md の体系を一周する練習素材。
 
 ## 現状
 
-| パス | 状態 |
-|---|---|
-| （新題材） | 準備中 |
-| `_archive/ratelimit/` | アーカイブ。題材ミスマッチ（FastAPI / GCP 前提）のため退避 |
+| パス | 状態 | 概要 |
+|---|---|---|
+| [`sales-aggregator/`](sales-aggregator/README.md) | 標準 | 日次売上 CSV を取り込んで商品ごとの累積レポートを出すバッチ。3 Phase（Redis 抽出 → 累積マージ → 冪等性） |
+| `_archive/ratelimit/` | アーカイブ | 題材ミスマッチ（FastAPI / GCP 前提）のため退避 |
 
 ## 新題材を作るときの最小要件
 

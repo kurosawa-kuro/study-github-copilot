@@ -1,0 +1,18 @@
+{
+  "completed_phase": 1,
+  "key_decisions": [
+    "RedisKV を Protocol で抽象化し、RedisKVImpl で本物実装を提供",
+    "公開 API は hget/hincrby/hgetall/sismember/sadd/keys/delete の最小セット",
+    "aggregator 本体は触らず、Phase 2 のための土台のみ追加"
+  ],
+  "deferred_items": [
+    "実 Redis でのコネクションプール戦略（Phase 2 で実害が出たら検討）"
+  ],
+  "assumptions_made": [
+    "[ASSUMPTION] fakeredis は hincrby/sismember/sadd を本番 Redis と同等に振る舞うとみなす"
+  ],
+  "breaking_changes": [],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] Redis 接続失敗時のリトライ・タイムアウト設計"
+  ]
+}

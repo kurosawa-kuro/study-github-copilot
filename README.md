@@ -101,7 +101,9 @@ study-github-copilot/
 
 ---
 
-https://youtu.be/9oQigvQDhfE
+
 ## 改訂履歴
 
 [docs/PROMPT_TEMPLATE.md の改訂履歴](docs/PROMPT_TEMPLATE.md#改訂履歴) を参照（単一正本）。
+
+https://youtu.be/9oQigvQDhfE

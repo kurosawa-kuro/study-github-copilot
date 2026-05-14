@@ -77,6 +77,9 @@
 
 ## Step 0-C | 前提固定
 
+> **このテンプレ本体の特別前提**: 案件想定は **Python / Docker / Redis / GCP / Terraform** を汎用スタックとして例示する。利用者が必要な項目だけ採用し、不要な行は削除して案件に合わせる。
+> （リポジトリ同梱の教材 `tutorial/` のスコープはより狭く Python / Docker / CSV / Redis のみ。これとは別物として扱う）
+
 セッション開始時に **0-C-full** を 1 回貼る。Phase 開始時のコンテキスト落ち対策には **0-C-min** を再貼り付けする。
 
 ### Step 0-C-min（Phase 毎に再貼り付け・約 10 行）
@@ -86,9 +89,9 @@
 
 - 言語: [例: Python 3.12]
 - 依存管理: [例: uv]
-- テスト: pytest + fakeredis. **全変更にテストコード必須**（テスト無しのコード変更は不完全）
-- 実行環境: Redis は Docker compose で起動
-- データ I/O: CSV（エンコーディング / 区切り / ヘッダ仕様を明示）
+- テスト: pytest（+ Redis を使うなら fakeredis）. **全変更にテストコード必須**（テスト無しのコード変更は不完全）
+- 実行環境: [例: ローカル Docker compose / Cloud Run / Cloud Functions]
+- IaC（使う場合）: Terraform / 手動変更禁止
 - 後方互換性: [必須 / 不要]
 - 出力ルール: 推測は [ASSUMPTION] / 確認事項は [QUESTION] / 既存に反する変更は [BREAKING]
 - タグなしで推測・決定した出力は不完全とみなす
@@ -101,31 +104,35 @@
 ```
 このセッション全体で守るべき前提を確認・固定します。
 
-### 技術スタック（Python / Docker / CSV / Redis）
+### 技術スタック（Python / Docker / Redis / GCP / Terraform 中心）
 - アプリ言語: Python [例: 3.12]（補助: Bash）
 - 依存管理: [例: uv / poetry / pip-tools]
-- テスト: pytest + fakeredis（Redis を使うコードの単体テスト）
-- リンター/フォーマッター: [例: ruff]
-- 型チェック: [例: mypy strict / pyright]
-- Redis: クライアント [例: redis-py] / 用途 [例: キャッシュ / ジョブキュー / 重複排除] / 起動は Docker compose
-- Docker: ローカル開発で Redis を起動するため必須。`docker compose up` で立ち上がる構成
-- CSV: 入出力のデータ形式 / エンコーディング [例: UTF-8 / Shift_JIS] / 区切り [例: , / \\t] / ヘッダ有無
+- テスト: pytest + fakeredis（Redis 単体） / terraform validate・tflint・terraform plan（IaC）
+- リンター/フォーマッター: ruff（Python）/ terraform fmt（HCL）
+- 型チェック: mypy strict
+- Redis: クライアント [例: redis-py] / 用途 [例: キャッシュ / セッション / レートリミット / ジョブキュー（永続要件次第で自前運用）] / 起動 [例: Memorystore for Redis / ローカルは Docker compose]
+- Docker: ローカル開発・コンテナビルド・Cloud Run / Cloud Functions 等への配備
+- IaC: Terraform [例: 1.7.x]（HCL）/ remote backend 必須 / 手動変更禁止
+- クラウド: GCP / プロジェクト ID: [プロジェクト ID]
+- 主要 GCP サービス: [例: Cloud Run / Cloud Functions / Vertex AI / BigQuery / Cloud Storage / Pub/Sub / Secret Manager / Memorystore for Redis]
+- 認証: [例: ADC / Workload Identity Federation]
+- データ I/O（案件依存）: [例: CSV / JSON / Parquet / Pub/Sub メッセージ]
 
 ### コーディング規約
 - Python: PEP 8（snake_case / PascalCase / UPPER_SNAKE_CASE）
-- Redis キー: 名前空間（例: `app:<feature>:<id>`）、用途と TTL をコメントで明示
-- CSV: ヘッダ行・型・必須項目を schema として明示（[例: `pydantic` モデル / `dataclass` で受ける]）
-- ディレクトリ: [例: src/<package>/、tests/、data/input/、data/output/]
+- Terraform: リソース型 snake_case、name 属性 kebab-case
+- Redis キー: コロン区切り名前空間（例: `app:<feature>:<id>`）、用途と TTL をコメントで明示
+- ディレクトリ: Python = src/<package>/、tests/ ／ Terraform = terraform/envs/<env>/、terraform/modules/
 - 既存規約ドキュメント: [パス]
 
 ### 制約
 - 後方互換性: [必須 / 不要]
-- 性能要件: [例: バッチ全体の所要時間 / 1 行あたり処理時間 / メモリ上限]
+- 性能要件: [例: バッチ所要時間 / API p95 / Cloud Run コールドスタート許容]
 - 依存追加: [自由 / 要承認 / 禁止]
-- セキュリティ: 機密は環境変数経由、ハードコード禁止
-- Redis: TTL 必須（メモリ枯渇防止）、用途別に名前空間分離
-- Docker: `compose.yaml` を変更する場合は影響を [BREAKING] 報告
-- CSV: 文字コード / 区切り / 改行コードの取り違えは [BREAKING] 候補
+- セキュリティ: 機密は Secret Manager、ハードコード禁止
+- Redis: TTL 必須（メモリ枯渇防止）、永続化方針 [RDB/AOF/なし]、最大メモリポリシー [例: allkeys-lru]
+- Docker: `compose.yaml` / `Dockerfile` を変更する場合は影響を [BREAKING] 報告
+- IaC: 手動変更禁止、remote backend 必須、不可逆変更（DROP / データ削除）は事前承認
 
 ### 出力ルール（全Stepで遵守）
 - 推測は [ASSUMPTION]、確認事項は [QUESTION]、既存に反する変更は [BREAKING]
@@ -134,7 +141,7 @@
 確認後、「前提固定完了」と出力してください。
 ```
 
-**運用**: 0-C-full の埋め込み済み版を `docs/CONTEXT.md` 等にプロジェクト固有値で保存し、Phase 毎は 0-C-min だけを貼ると効率的。クラウドや IaC を使う案件では、案件固有の制約として末尾に追記する。
+**運用**: 0-C-full の埋め込み済み版を `docs/CONTEXT.md` 等にプロジェクト固有値で保存し、Phase 毎は 0-C-min だけを貼ると効率的。案件に不要なスタック（例: IaC が無い案件）は該当行をそのまま削除する。
 
 ## Step 1 | 実現可能性の調査
 
@@ -191,6 +198,7 @@ Step 1 の調査結果をもとに作業計画書を作成してください。
 
 ### 補足
 - 検証コマンドが書けない領域は「目視確認手順」で代替
+- インフラ系の Phase は `terraform plan` 差分を検証コマンドにする
 ```
 
 ## Step 3 | Phase {N} の実装
@@ -290,10 +298,10 @@ Phase 1〜{N} 全体の整合性を検証してください。
 対象: Step 5-A を通過した変更一式
 
 ### チェック項目
-1. インフラ / マイグレーション
-    - インフラ変更がある場合、事前差分が想定通りか（不可逆変更の有無）
-    - データマイグレーションのロールフォワード / ロールバック
-    - 破壊的操作（DROP / データ削除）の承認状況
+1. IaC / マイグレーション
+    - `terraform plan` 差分が想定通りか（不可逆変更の有無）
+    - DB マイグレーションのロールフォワード / ロールバック
+    - DROP / データ削除など破壊的変更の承認状況
 2. デプロイ手順
     - リリースコマンド / パイプライン
     - 段階リリース戦略

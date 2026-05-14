@@ -53,4 +53,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - 改訂順序: PROMPT_TEMPLATE → QUICK_GUIDE → README → CLAUDE → tutorial の順で更新する
 - Step 0-B（設計判断）と Step 5-C（振り返り）は **意図的に「保留」状態**。「必要が出てから整備」という段階導入方針のため、勝手に中身を埋めない
-- テンプレ本文・例示から API / HTTP / FastAPI / クラウド固有サービス（GCP / Vertex AI / Cloud Run / Terraform 等）への言及は **入れない**
+- スタック制約は **二重スコープ** で管理する:
+  - `docs/QUICK_GUIDE.md` / `docs/PROMPT_TEMPLATE.md`（テンプレ本体）: **特別例外**。実案件想定で `Python / Docker / Redis / GCP / Terraform` を汎用スタックとして例示してよい
+  - `tutorial/` 配下（教材）: 狭く `Python / Docker / CSV / Redis` のみ。API / Web / クラウド固有サービスは入れない
+- 教材のスコープ違反（API / Web / クラウド固有名）を tutorial に持ち込まないこと

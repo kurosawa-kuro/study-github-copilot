@@ -6,7 +6,7 @@ limit / window / 対象 path はハードコード（Phase 3 で環境変数化�
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from myapi.core.ratelimit import RateLimiter
@@ -33,7 +33,7 @@ def _auth_middleware_factory(app: FastAPI) -> None:
             return await call_next(request)
         auth = request.headers.get("authorization")
         if not auth or not auth.startswith("Bearer "):
-            raise HTTPException(status_code=401, detail="unauthorized")
+            return JSONResponse(status_code=401, content={"detail": "unauthorized"})
         request.state.user_id = auth.removeprefix("Bearer ").strip()
         return await call_next(request)
 

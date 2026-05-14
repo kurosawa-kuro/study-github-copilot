@@ -57,3 +57,33 @@
 
 「戻り先判定が一度も発生しない」進行は学習効果が薄い。
 **最低 1 回は戻り先判定を起こさせる**。
+
+---
+
+## 難難度シナリオ（自発的発見で +1）
+
+仕掛けで誘発する戻り判定（middleware 順序 / gateway 二重制御）は **易〜中** 難度。
+受講者が **自分で気づいて** 戻り先判定を発生させると **S 評価相当**。
+
+| 症状 / 観点 | 戻り先 | 期待される受講者の発言 |
+|---|---|---|
+| `X-RateLimit-Reset` の単位曖昧（epoch 秒 / 残秒 / RFC 3339） | Step 0-A | 「依頼書に Reset 単位の指定が無い。確認します」 |
+| Phase 2 で `INCR + EXPIRE` の race で初回数件が TTL なしで残る可能性 | Step 1 → Step 2 | 「Lua スクリプト化 or `SET NX EX` パターンを検討」 |
+| 識別子が `user_id` のとき、JWT 失効や user 削除後の **削除残骸** | Step 0-B | 「TTL に依存するが、Key 数の上限監視が要る」 |
+| 認証なしフォールバック `X-Forwarded-For` 先頭の信頼境界 | Step 0-A | 「ゲートウェイ手前で偽装可能か `[QUESTION]`」 |
+| `pytest` 並列実行時に fakeredis インスタンスが共有されると別テストが汚染 | Step 2 | 「conftest の `fake_redis` を function スコープで隔離」 |
+
+これらは Step 4 のレビューで「自分で」`[BREAKING]` `[ASSUMPTION]` `[QUESTION]` のいずれかを発生させ、
+戻り先を明示できれば加点。ファシリは聞かれない限り誘導しない。
+
+---
+
+## ファシリが「予防」を見抜く方法
+
+Step 2 の作業計画書 の段階で、以下が含まれていれば「予防」とみなす:
+
+- middleware 登録順序が Phase 2 完了条件に **明文で書かれている**
+- `INCR + EXPIRE` の race を `[ASSUMPTION]` として明記 or Lua 化を `[OUT-OF-SCOPE]` で挙げている
+- gateway 二重制御が Step 1 で `[BREAKING]` 検出済みで、Phase 2 計画に「衝突確認」が含まれる
+
+予防に成功した受講者には、難難度の別シナリオ（上表）を `[QUESTION]` 形式で投げて Step 0-A 戻り体験を提供すると S 評価に持っていける。

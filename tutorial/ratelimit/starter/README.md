@@ -18,6 +18,16 @@
 ## 開発
 
 ```bash
+make install       # uv sync --extra dev
+make test          # 全テスト
+make verify        # lint + typecheck + test (Phase 完了時の検証コマンド)
+make run           # uvicorn 起動
+make help          # 全ターゲット一覧
+```
+
+Makefile を使わない場合は以下と等価:
+
+```bash
 uv sync --extra dev
 uv run pytest
 uv run uvicorn myapi.main:app --reload

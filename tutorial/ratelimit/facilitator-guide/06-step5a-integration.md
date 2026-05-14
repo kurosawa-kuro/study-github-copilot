@@ -15,15 +15,17 @@ Phase 1〜3 の引き継ぎ JSON 3 つ。
 
 ### 2. E2E 動作
 
-最低限、以下のシナリオを `curl` か `httpx` で叩いて結果を引き継ぎに貼り付け:
+`tutorial/ratelimit/e2e/scenarios.sh` を実行し、出力を引き継ぎ JSON の `e2e_results` に貼る。
+スクリプトは以下の 6 シナリオを自動検証する（[e2e/README.md](../e2e/README.md) 参照）:
 
 | シナリオ | 期待 |
 |---|---|
-| 認証あり `/users/u-001` × 60 回 | 全部 200、`X-RateLimit-Remaining` が 0 まで減る |
-| 61 回目 | 429、`Retry-After: 60` |
-| `/health` × 100 回 | 全部 200、レートリミットヘッダ無し |
+| 認証あり `/users/u-001` × LIMIT 回 | 全部 200、`X-RateLimit-Remaining` が 0 まで減る |
+| LIMIT+1 回目 | 429、`Retry-After` 付与、`X-RateLimit-Remaining: 0` |
+| `/health` × 50 回 | 全部 200、レートリミットヘッダ無し |
 | 認証なし `/users/u-001` | 401（既存挙動が壊れていないこと） |
 | 異なる user_id（u-001 / u-002） | カウンタが独立していること |
+| 窓リセット後に再度成功 | 200 |
 
 ### 3. 累積副作用
 

@@ -1,0 +1,13 @@
+# myapi 用 Redis のみを立ち上げる. myapi 本体はホストの uv で起動する想定.
+# 用途: Phase 3 完了後の Step 5-A 統合検証.
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 10

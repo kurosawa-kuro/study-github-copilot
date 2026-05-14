@@ -68,9 +68,33 @@
 
 ## Step 0-B | 設計判断（保留）
 
-> 大規模・新規案件でアーキテクチャ判断が必要なときに整備。
+> v3 では未整備。以下の **トリガ** が満たされたら v4 で整備する:
+> - 同一プロジェクトで「アーキテクチャ判断が必要」と判定された案件が 2 件以上発生
+> - または、戻り先判定「Step 0-B」が他プロジェクトを含めて 3 件以上発生
+>
+> それまでは Step 0-A の `[AMBIGUITY]` 列挙で設計判断のばらつきを吸収する。
+> 戻り先判定表で「設計欠陥 → Step 0-B」となった場合、暫定的に Step 0-A まで戻して設計選択肢を `[AMBIGUITY]` で再列挙する。
 
 ## Step 0-C | 前提固定
+
+セッション開始時に **0-C-full** を 1 回貼る。Phase 開始時のコンテキスト落ち対策には **0-C-min** を再貼り付けする。
+
+### Step 0-C-min（Phase 毎に再貼り付け・約 10 行）
+
+```
+このセッションの前提を再確認します。逸脱があれば指摘してください。
+
+- 言語/フレームワーク: [例: Python 3.12 / FastAPI]
+- 依存管理: [例: uv]
+- テスト: [例: pytest + fakeredis]
+- 後方互換性: [必須 / 不要]
+- 出力ルール: 推測は [ASSUMPTION] / 確認事項は [QUESTION] / 既存に反する変更は [BREAKING]
+- タグなしで推測・決定した出力は不完全とみなす
+
+「前提了解」とだけ出力してください。
+```
+
+### Step 0-C-full（セッション開始時に 1 回）
 
 ```
 このセッション全体で守るべき前提を確認・固定します。
@@ -80,7 +104,7 @@
 - IaC: Terraform [例: 1.7.x]
 - クラウド: GCP / プロジェクト ID: [プロジェクト ID]
 - 主要 GCP サービス: [例: Cloud Run / Cloud Functions / Vertex AI / BigQuery / Cloud Storage / Pub/Sub / Secret Manager / Memorystore for Redis]
-- Redis: Memorystore for Redis または自前 / クライアント: redis-py / 用途: [例: キャッシュ / セッション / レートリミット / ジョブキュー]
+- Redis: Memorystore for Redis または自前 / クライアント: redis-py / 用途: [例: キャッシュ / セッション / レートリミット / ジョブキューは永続化要件次第で自前運用]
 - Python フレームワーク: [例: FastAPI / Flask / Cloud Functions Framework]
 - テスト: pytest / fakeredis または testcontainers-redis / terraform validate・tflint・terraform plan
 - リンター: ruff / terraform fmt
@@ -109,6 +133,8 @@
 
 確認後、「前提固定完了」と出力してください。
 ```
+
+**運用**: 0-C-full の埋め込み済み版を `docs/CONTEXT.md` 等にプロジェクト固有値で保存し、Phase 毎は 0-C-min だけを貼ると効率的。
 
 ## Step 1 | 実現可能性の調査
 
@@ -285,4 +311,8 @@ Phase 1〜{N} 全体の整合性を検証してください。
 
 ## Step 5-C | 振り返り（保留）
 
-> プロセス改善が必要なときに整備。
+> v3 では未整備。以下の **トリガ** が満たされたら v4 で整備する:
+> - 同種の Step 4 戻り先判定が他プロジェクトを含めて 3 件以上再発
+> - または、複数案件で同じ `[OUT-OF-SCOPE]` 項目が繰り返し発生
+>
+> 単発案件では振り返り不要。複数案件にまたがる傾向が見えてから整備する。

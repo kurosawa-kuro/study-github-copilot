@@ -1,0 +1,16 @@
+{
+  "completed_phase": 3,
+  "key_decisions": [
+    "RatelimitSettings を Settings の入れ子モデルとして追加",
+    "target_path_prefixes は環境変数で上書き可能 (カンマ区切り)",
+    "X-RateLimit-Limit / Remaining / Reset を全成功応答に付与、429 は Retry-After を併記"
+  ],
+  "deferred_items": [],
+  "assumptions_made": [
+    "[ASSUMPTION] 環境変数からの tuple 復元は Pydantic v2 のデフォルトカンマ区切りで十分"
+  ],
+  "breaking_changes": [],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] ヘッダ命名を IETF draft-ietf-httpapi-ratelimit-headers に揃える件"
+  ]
+}

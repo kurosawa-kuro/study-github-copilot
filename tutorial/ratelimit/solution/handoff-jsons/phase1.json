@@ -1,0 +1,17 @@
+{
+  "completed_phase": 1,
+  "key_decisions": [
+    "汎用 KV を Protocol で定義し RedisKVImpl を実装。UserCacheRedis は委譲に書き換え",
+    "Redis キー名前空間は app:user:<id> / app:ratelimit:<id> で衝突しないよう分離"
+  ],
+  "deferred_items": [
+    "RedisKV のコネクションプール戦略 (Phase 2 で実害が出たら検討)"
+  ],
+  "assumptions_made": [
+    "[ASSUMPTION] fakeredis は incr/expire を本番 Redis と同等に振る舞うとみなす"
+  ],
+  "breaking_changes": [],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] User キャッシュ TTL を環境変数化する件 (既存挙動を維持)"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "completed_phase": 2,
+  "key_decisions": [
+    "固定窓 (INCR + 初回 EXPIRE) を採用。スライディングウィンドウは over-engineering と判断",
+    "識別子: 認証済 user_id 優先、未認証は X-Forwarded-For 先頭",
+    "対象 path 判定は prefix マッチ (/users, /orders)",
+    "/health, /openapi.json, /docs は明示除外"
+  ],
+  "deferred_items": [
+    "上限値・窓幅・対象 path のハードコードを環境変数化 → Phase 3",
+    "X-RateLimit-* ヘッダ整備 → Phase 3"
+  ],
+  "assumptions_made": [
+    "[ASSUMPTION] X-Forwarded-For 先頭はゲートウェイによって信頼可能な値に書き換えられている",
+    "[ASSUMPTION] middleware の LIFO 登録順を利用し auth → ratelimit の順で評価"
+  ],
+  "breaking_changes": [
+    "[BREAKING] /orders はゲートウェイ側 600/min と二重制御になる (本実装が 60/min で支配)"
+  ],
+  "out_of_scope_items": [
+    "[OUT-OF-SCOPE] スライディングウィンドウ / トークンバケットへの将来切替"
+  ]
+}

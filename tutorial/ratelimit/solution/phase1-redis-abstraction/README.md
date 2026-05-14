@@ -8,12 +8,12 @@
 
 ## 変更ファイル
 
-| パス | 種別 | 概要 | 想定行数 |
-|---|---|---|---|
-| `src/myapi/core/redis_kv.py` | 新規 | 汎用 KV ラッパ（`Protocol` で抽象化） | 約 50 |
-| `src/myapi/core/redis_client.py` | 変更 | `UserCacheRedis` を `RedisKV` 委譲に書き換え | 約 40 |
-| `tests/test_redis_kv.py` | 新規 | `RedisKV` の正常系・異常系・境界値 | 約 60 |
-| `tests/conftest.py` | 変更 | `redis_kv` fixture を追加（fakeredis ラップ） | 約 10 |
+| パス | 種別 | 概要 | 想定行数 | このディレクトリ内の成果物 |
+|---|---|---|---|---|
+| `src/myapi/core/redis_kv.py` | 新規 | 汎用 KV ラッパ（`Protocol` で抽象化） | 約 50 | `redis_kv.py` |
+| `src/myapi/core/redis_client.py` | 変更 | `UserCacheRedis` を `RedisKV` 委譲に書き換え | 約 40 | `redis_client.py` |
+| `tests/conftest.py` | 変更 | `fake_kv` fixture を追加、`user_cache` を kv 経由に | 約 10 | `conftest.py` |
+| `tests/test_redis_kv.py` | 新規 | `RedisKV` の正常系・異常系・境界値 | 約 60 | （受講者の演習範囲） |
 
 ## 公開インタフェース
 

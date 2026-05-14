@@ -18,7 +18,7 @@
 ## 開発
 
 ```bash
-uv sync
+uv sync --extra dev
 uv run pytest
 uv run uvicorn myapi.main:app --reload
 ```

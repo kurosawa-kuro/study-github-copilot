@@ -8,11 +8,12 @@
 
 ## 変更ファイル
 
-| パス | 種別 | 概要 | 想定行数 |
-|---|---|---|---|
-| `src/myapi/core/ratelimit.py` | 新規 | `RateLimiter` クラス、固定窓ロジック | 約 80 |
-| `src/myapi/main.py` | 変更 | middleware 登録（auth より後ろ）、`/health` 除外 | 約 30 |
-| `tests/test_ratelimit.py` | 新規 | 上限内 / 超過 / 窓リセット / `/health` 除外 / IP fallback | 約 120 |
+| パス | 種別 | 概要 | 想定行数 | このディレクトリ内の成果物 |
+|---|---|---|---|---|
+| `src/myapi/core/ratelimit.py` | 新規 | `RateLimiter` クラス、固定窓ロジック | 約 80 | `ratelimit.py` |
+| `src/myapi/main.py` | 変更 | middleware 登録（auth → ratelimit）、`/health` 除外 | 約 50 | `main.py` |
+| `tests/conftest.py` | 変更 | `client` が `create_app(kv=, limit=5)` を渡す | 約 10 | `conftest.py` |
+| `tests/test_ratelimit.py` | 新規 | 上限内 / 超過 / `/health` 除外 / カウンタ独立 / 401 非消費 | 約 60 | `test_ratelimit.py` |
 
 ## 公開インタフェース
 
@@ -30,14 +31,14 @@ class RateLimitResult:
 
 ## 完了条件
 
-- 機能条件: `/users/{id}` を同一識別子で 61 回叩くと 61 回目が 429。`/health` は何回叩いても 200
+- 機能条件: テスト用 `limit=5` で同一識別子の 6 回目が 429、`/health` は無制限通過
 - テスト条件: `tests/test_ratelimit.py` 全パス、既存テスト全パス
 - 検証コマンド: `uv run pytest -q`
 - ヘッダ要件: 429 時に `Retry-After` 必須
 
 ## ロールバック手順
 
-- `app.middleware("http")` の登録を削除（auth より後の1ブロック）
+- `main.py` の `_ratelimit_middleware_factory(app, limiter)` 呼び出しを削除し `create_app` のシグネチャを starter のものに戻す
 
 ## 注意 [BREAKING] 検出
 

@@ -1,2 +1,12 @@
 tutorial/sales-aggregator/starter/data/output/report.csv
 tutorial/sales-aggregator/starter/src/salesagg/__pycache__/
+tutorial/sales-aggregator/starter/tests/__pycache__/
+tutorial/sales-aggregator/starter/tests/__pycache__/
+tutorial/_archive/ratelimit/solution/phase1-redis-abstraction/__pycache__/
+tutorial/_archive/ratelimit/solution/phase2-middleware/__pycache__/
+tutorial/_archive/ratelimit/solution/phase3-config-externalize/
+tutorial/sales-aggregator/solution/phase1-redis-kv/__pycache__/
+tutorial/sales-aggregator/solution/phase2-cumulative/__pycache__/
+tutorial/sales-aggregator/solution/phase3-idempotency/__pycache__/
+tutorial/_archive/ratelimit/solution/phase2-middleware/__pycache__/
+tutorial/sales-aggregator/starter/tests/__pycache__/

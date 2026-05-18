@@ -5,10 +5,18 @@ from pathlib import Path
 import fakeredis
 import pytest
 
+from salesagg.redis_kv import RedisKVImpl
+
 
 @pytest.fixture
 def fake_redis() -> fakeredis.FakeRedis:
     return fakeredis.FakeRedis(decode_responses=True)
+
+
+@pytest.fixture
+def fake_kv(fake_redis: fakeredis.FakeRedis) -> RedisKVImpl:
+    """Test 用の RedisKVImpl（fake_redis をバックエンド）."""
+    return RedisKVImpl(client=fake_redis)
 
 
 @pytest.fixture
